@@ -1,7 +1,13 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 import { Directory } from '@capacitor/filesystem';
 
-type HttpResponseType = 'arraybuffer' | 'blob' | 'json' | 'text' | 'document';
+type HttpResponseType =
+  | 'arraybuffer'
+  | 'blob'
+  | 'json'
+  | 'text'
+  | 'document'
+  | 'forcetext';
 
 export interface HttpPlugin {
   request(options: HttpOptions): Promise<HttpResponse>;

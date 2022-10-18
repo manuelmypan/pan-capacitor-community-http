@@ -8,6 +8,7 @@ fileprivate enum ResponseType: String {
     case document = "document"
     case json = "json"
     case text = "text"
+    case forceText = "forcetext"
 
     static let `default`: ResponseType = .text
 
@@ -111,7 +112,9 @@ class HttpRequestHandler {
 
         let contentType = (response.allHeaderFields["Content-Type"] as? String ?? "application/default").lowercased();
 
-        if (contentType.contains("application/json") || responseType == .json) {
+        if (responseType == .forceText) {
+            output["data"] = String(data: data, encoding: .utf8)
+        } else if (contentType.contains("application/json") || responseType == .json) {
             output["data"] = tryParseJson(data);
         } else if (responseType == .arrayBuffer || responseType == .blob) {
             output["data"] = data.base64EncodedString();

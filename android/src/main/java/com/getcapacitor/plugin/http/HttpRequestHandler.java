@@ -39,7 +39,8 @@ public class HttpRequestHandler {
         BLOB("blob"),
         DOCUMENT("document"),
         JSON("json"),
-        TEXT("text");
+        TEXT("text"),
+        FORCETEXT("forcetext");
 
         private final String name;
 
@@ -127,11 +128,11 @@ public class HttpRequestHandler {
             String initialQueryBuilderStr = initialQuery == null ? "" : initialQuery;
 
             Iterator<String> keys = params.keys();
-            
+
             if (!keys.hasNext()) {
                 return this;
             }
-            
+
             StringBuilder urlQueryBuilder = new StringBuilder(initialQueryBuilderStr);
 
             // Build the new query string
@@ -167,7 +168,13 @@ public class HttpRequestHandler {
                 URI encodedUri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), urlQuery, uri.getFragment());
                 this.url = encodedUri.toURL();
             } else {
-                String unEncodedUrlString = uri.getScheme() + "://" + uri.getAuthority() + uri.getPath() + ((!urlQuery.equals("")) ? "?" + urlQuery : "") + ((uri.getFragment() != null) ? uri.getFragment() : "");
+                String unEncodedUrlString =
+                    uri.getScheme() +
+                    "://" +
+                    uri.getAuthority() +
+                    uri.getPath() +
+                    ((!urlQuery.equals("")) ? "?" + urlQuery : "") +
+                    ((uri.getFragment() != null) ? uri.getFragment() : "");
                 this.url = new URL(unEncodedUrlString);
             }
 
@@ -234,6 +241,9 @@ public class HttpRequestHandler {
             } else {
                 return readStreamAsString(errorStream);
             }
+        } else if (responseType == ResponseType.FORCETEXT) {
+            InputStream stream = connection.getInputStream();
+            return readStreamAsString(stream);
         } else if (contentType != null && contentType.contains(APPLICATION_JSON.getValue())) {
             // backward compatibility
             return parseJSON(readStreamAsString(connection.getInputStream()));
